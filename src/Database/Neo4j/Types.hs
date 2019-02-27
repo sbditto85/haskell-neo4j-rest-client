@@ -41,9 +41,6 @@ import qualified Network.HTTP.Types as HT
 
 newtype Neo4jVersion = Neo4jVersion {runVersion :: Version}
 
-(<>) :: (Monoid a) => a -> a -> a
-(<>) = mappend
-
 -- | Type for a single value of a Neo4j property
 data Val = IntVal Int64 | BoolVal Bool | TextVal T.Text | DoubleVal Double deriving (Show, Eq)
 
@@ -94,7 +91,7 @@ instance J.ToJSON Val where
 -- | Specifying how to convert property values to JSON
 instance J.ToJSON PropertyValue where
     toJSON (ValueProperty v) = J.toJSON v
-    toJSON (ArrayProperty vs) = J.Array (V.fromList $ map J.toJSON vs) 
+    toJSON (ArrayProperty vs) = J.Array (V.fromList $ map J.toJSON vs)
 
 -- | JSON to single property values
 instance J.FromJSON Val where
@@ -136,7 +133,7 @@ class Entity a where
     getEntityProperties :: a -> Properties
     setEntityProperties :: a -> Properties -> a
     entityObj :: a -> EntityObj
-    
+
 newtype NodeUrl = NodeUrl {runNodeUrl :: T.Text} deriving (Show, Eq, Generic)
 instance Hashable NodeUrl
 
@@ -384,4 +381,3 @@ instance MonadBase (Neo4j) (Neo4j) where
 instance J.FromJSON Neo4jVersion where
     parseJSON (J.Object v) = liftM (Neo4jVersion . fst . last . readP_to_S parseVersion) (v .: "neo4j_version")
     parseJSON _ = mzero
-
